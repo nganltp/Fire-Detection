@@ -1,0 +1,32 @@
+﻿Build started 19-Mar-19 10:54:55 AM.
+     1>Project "D:\work\SvmOpenCVSource\SvmOpenCV_Training\SvmOpenCV_Training.vcxproj" on node 2 (Build target(s)).
+       Project file contains ToolsVersion="14.0". This toolset may be unknown or missing, in which case you may be able to resolve this by installing the appropriate version of MSBuild, or the build may have been forced to a particular ToolsVersion for policy reasons. Treating the project as if it had ToolsVersion="4.0". For more information, please see http://go.microsoft.com/fwlink/?LinkId=291333.
+     1>ClCompile:
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\x86_amd64\CL.exe /c /ID:\work\SvmOpenCVSource\src /ID:\work\SvmOpenCVSource\SvmOpenCV_Training\..\..\include /ID:\work\SvmOpenCVSource\lib\TGMTcpp\src /ID:\work\SvmOpenCVSource\lib\opencv320_lite\include\ /ID:\work\SvmOpenCVSource\ /Zi /nologo /W3 /WX- /sdl /Od /D WIN32 /D _DEBUG /D _CONSOLE /D _LIB /D NOMINMAX /D _CRT_SECURE_NO_WARNINGS /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"x64\Debug\\" /Fd"x64\Debug\vc110.pdb" /Gd /TP /errorReport:prompt ..\lib\TGMTcpp\src\stdafx.cpp ..\lib\TGMTcpp\src\TGMTdebugger.cpp ..\lib\TGMTcpp\src\TGMTfile.cpp ..\lib\TGMTcpp\src\TGMTsvm.cpp ..\lib\TGMTcpp\src\TGMTutil.cpp WinMain.cpp
+         WinMain.cpp
+     1>D:\work\SvmOpenCVSource\lib\TGMTcpp\src\TGMTsvm.h(23): error C2864: 'TGMTsvm::mIsTrained' : only static const integral data members can be initialized within a class
+         TGMTutil.cpp
+     1>..\lib\TGMTcpp\src\TGMTutil.cpp(148): error C2143: syntax error : missing ')' before '{'
+     1>..\lib\TGMTcpp\src\TGMTutil.cpp(148): error C2601: 'rng' : local function definitions are illegal
+                 ..\lib\TGMTcpp\src\TGMTutil.cpp(147): this line contains a '{' which has not yet been matched
+     1>..\lib\TGMTcpp\src\TGMTutil.cpp(148): error C2059: syntax error : ')'
+         TGMTsvm.cpp
+     1>d:\work\svmopencvsource\lib\tgmtcpp\src\TGMTsvm.h(23): error C2864: 'TGMTsvm::mIsTrained' : only static const integral data members can be initialized within a class
+     1>..\lib\TGMTcpp\src\TGMTsvm.cpp(30): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+         TGMTfile.cpp
+     1>..\lib\TGMTcpp\src\TGMTfile.cpp(126): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+     1>..\lib\TGMTcpp\src\TGMTfile.cpp(134): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+     1>..\lib\TGMTcpp\src\TGMTfile.cpp(155): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+     1>..\lib\TGMTcpp\src\TGMTfile.cpp(314): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+     1>..\lib\TGMTcpp\src\TGMTfile.cpp(316): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+     1>..\lib\TGMTcpp\src\TGMTfile.cpp(466): warning C4267: 'initializing' : conversion from 'size_t' to 'int', possible loss of data
+     1>..\lib\TGMTcpp\src\TGMTfile.cpp(572): warning C4244: 'return' : conversion from 'std::streamoff' to 'int', possible loss of data
+     1>..\lib\TGMTcpp\src\TGMTfile.cpp(581): warning C4244: 'return' : conversion from 'std::streamoff' to 'int', possible loss of data
+         TGMTdebugger.cpp
+         stdafx.cpp
+         Generating Code...
+     1>Done Building Project "D:\work\SvmOpenCVSource\SvmOpenCV_Training\SvmOpenCV_Training.vcxproj" (Build target(s)) -- FAILED.
+
+Build FAILED.
+
+Time Elapsed 00:00:14.70
