@@ -3,7 +3,7 @@ import cv2
 
 import os
 # path = "D:\\work\\Fire images_data\\smoke\\original_img"
-path ="D:\\work\\GIT\\Fire-Detection\\Fireimages_data\\TRAIN\\0-pre\\"
+path ="D:\\work\\GIT\\Fire-Detection\\Fireimages_data\\TRAIN\\1-pre\\"
 #os.mkdir("D:\\work\\Fire images_data\\smoke\\blur")
 num=0
 nameImg = os.listdir(path)
@@ -18,7 +18,7 @@ for i in nameImg:
 	# dst = img[0:300,150:400] #y:y+h, x:x+w
 	# height, width = img.shape[:2]
 	#save img
-	cv2.imwrite("D:\\work\\GIT\\Fire-Detection\\Fireimages_data\\TRAIN\\0\\" + str(num) + ".jpg",dst)
+	cv2.imwrite("D:\\work\\GIT\\Fire-Detection\\Fireimages_data\\TRAIN\\1\\" + str(num) + ".jpg",dst)
 	num = num + 1
 	# display
 	cv2.imshow('image',img)

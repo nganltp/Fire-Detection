@@ -45,7 +45,7 @@ if __name__ == '__main__':
 	# data_test = np.array(data_test)/255
 	X_train, X_test, y_train, y_test = train_test_split(data, labels, test_size = 0.20) 
 
-	# # TRAIN
+	# TRAIN
 	clf = svm.SVC(kernel='linear')
 	clf.fit(X_train, y_train)
 
