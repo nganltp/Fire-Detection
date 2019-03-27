@@ -149,13 +149,14 @@ if __name__ == '__main__':
     data = []
     hog_descriptors = []
     count = 0
+    numimg = 422
     hog = get_hog()
     # hog = cv2.HOGDescriptor(winSize,blockSize,blockStride,cellSize,nbins,derivAperture,winSigma,
                         # histogramNormType,L2HysThreshold,gammaCorrection,nlevels)
     for pathImg in contents:
         # gan nhan labels
         count = count + 1
-        if(count < 274 ):
+        if(count < numimg ):
             labels.append(1)
         else:
             labels.append(0)
@@ -195,8 +196,8 @@ if __name__ == '__main__':
     hog_descriptors_train, hog_descriptors_test = np.split(hog_descriptors, [train_n])
     labels_train, labels_test = np.split(labels, [train_n])
 
-    print('number of train img: '+ str(len(labels_train)/2))
-    print('number of test img: '+ str(len(labels_test)/2))
+    print('Number of train img: '+ str(len(labels_train)/2))
+    print('Number of test img: '+ str(len(labels_test)/2))
     
     print('Training SVM model ...')
     model = svmInit()
