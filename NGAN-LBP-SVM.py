@@ -9,6 +9,8 @@ import argparse
 import cv2
 import os
 
+pathImgTest = "D:\\work\\GIT\\Fire-Detection\\TestImage\\shibainu.jpg"
+
 # print('import ok')
 class LocalBinaryPatterns:
 	def __init__(self, numPoints, radius):
@@ -57,9 +59,9 @@ if __name__ == '__main__':
 		# label 1: Non Fire
 		count = count + 1
 		if(count < numImg + 1):
-			labels.append(1)
-		else:
 			labels.append(0)
+		else:
+			labels.append(1)
 
 		pathImg=pathImg.replace("\n", "")
 		# print(pathImg)		
@@ -99,19 +101,25 @@ if __name__ == '__main__':
 		# print(labels_test[i])
 		prediction = model.predict(data_test[i].reshape(1, -1))
 		if (prediction[0]==labels_test[i]):
+
 			dem = dem + 1
+			# cv2.putText(image, str(prediction_[0]), (10, 30), cv2.FONT_HERSHEY_SIMPLEX,1,(0,255,0),2,cv2.LINE_AA)
+			# cv2.imshow("Image", image)
 	accuracy = float(dem/len(data_test))
+	print('so anh nhan dien: ' + str(len(data_test)))
+	print('so anh nhan dien dung: ' + str(dem))
 	print('Percentage Accuracy: %.2f %%' % (accuracy*100))	
 
-	print(labels_test[3])
-
-	image = cv2.imread(pathImg)
-	gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+	image = cv2.imread('D:\\work\\GIT\\Fire-Detection\\Fireimages_data\\TRAIN\\1\\356.jpg')
+	dst = cv2.resize(image,(64,64))
+	image = cv2.resize(image,(300,300))
+	gray = cv2.cvtColor(dst, cv2.COLOR_BGR2GRAY)
 	hist = desc.describe(gray)
-	prediction = model.predict(hist.reshape(1, -1))
+	prediction_ = model.predict(hist.reshape(1, -1))
 
+	print(prediction_)
 	# display the image and the prediction
-	cv2.putText(image, str(prediction[0]), (10, 30), cv2.FONT_HERSHEY_SIMPLEX,1,(0,0,255),2,cv2.LINE_AA)
+	cv2.putText(image, str(prediction_[0]), (10, 30), cv2.FONT_HERSHEY_SIMPLEX,1,(0,255,0),2,cv2.LINE_AA)
 	cv2.imshow("Image", image)
 
 
