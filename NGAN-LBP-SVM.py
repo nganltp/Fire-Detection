@@ -49,7 +49,7 @@ if __name__ == '__main__':
 	radius = 3
 	numPoints = 8*radius 
 
-	numImg = 422
+	numImg = 500
 
 	desc = LocalBinaryPatterns(numPoints, radius)
 
@@ -70,7 +70,6 @@ if __name__ == '__main__':
 
 		hist = desc.describe(gray)
 		data.append(hist)
-
 	print('Shuffle data ... ')
 	# Shuffle data
 	rng_state = np.random.get_state()
@@ -110,7 +109,7 @@ if __name__ == '__main__':
 	print('so anh nhan dien dung: ' + str(dem))
 	print('Percentage Accuracy: %.2f %%' % (accuracy*100))	
 
-	image = cv2.imread('D:\\work\\GIT\\Fire-Detection\\Fireimages_data\\TRAIN\\1\\356.jpg')
+	image = cv2.imread('D:\\work\\GIT\\Fire-Detection\\TestImage\\111.jpg')
 	dst = cv2.resize(image,(64,64))
 	image = cv2.resize(image,(300,300))
 	gray = cv2.cvtColor(dst, cv2.COLOR_BGR2GRAY)
