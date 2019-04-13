@@ -4,10 +4,16 @@ from skimage.feature import local_binary_pattern
 import numpy as np
 
 from sklearn.svm import LinearSVC
+import matplotlib.pyplot as plt
+from sklearn import svm
+from sklearn.model_selection import GridSearchCV
 from imutils import paths
 import argparse
 import cv2
 import os
+# import pickle
+from sklearn.externals import joblib
+
 
 pathImgTest = "D:\\work\\GIT\\Fire-Detection\\TestImage\\shibainu.jpg"
 
@@ -35,6 +41,24 @@ class LocalBinaryPatterns:
 		# return the histogram of Local Binary Patterns
 		return hist
 
+def get2DPlot():
+	X = data_train 
+	Y = labels_train
+	X_min, X_max = X.min() - .5, X.max() + .5
+	Y_min, Y_max = X.min() - .5, X.max() + .5
+	plt.figure(2, figsize=(8, 6))
+	plt.clf()
+
+	plt.scatter(X, X, c=Y, cmap=plt.cm.Paired)
+	plt.xlabel('Sepal length')
+	plt.ylabel('Sepal width')
+
+	plt.xlim(X_min, X_max)
+	plt.ylim(Y_min, Y_max)
+	plt.xticks(())
+	plt.yticks(())
+	plt.show()
+
 if __name__ == '__main__':
 	                                                                             
 	# open the file where save path of all image
@@ -49,7 +73,7 @@ if __name__ == '__main__':
 	radius = 3
 	numPoints = 8*radius 
 
-	numImg = 422
+	numImg = 500
 
 	desc = LocalBinaryPatterns(numPoints, radius)
 
@@ -57,11 +81,14 @@ if __name__ == '__main__':
 		# assign labels
 		# label 0: Fire
 		# label 1: Non Fire
+		# label 2: Smoke
 		count = count + 1
 		if(count < numImg + 1):
-			labels.append(0)
-		else:
 			labels.append(1)
+		# elif(numImg < count) and (count < 2*numImg+1):
+		# 	labels.append(2)
+		else:
+			labels.append(0)
 
 		pathImg=pathImg.replace("\n", "")
 		# print(pathImg)	
@@ -92,9 +119,18 @@ if __name__ == '__main__':
 	labels_train, labels_test = np.split(labels, [train_n])
 
 	# train a Linear SVM on the data
-	model = LinearSVC(C=100.0, random_state=42)
-	model.fit(data_train, labels_train)
+	# model = LinearSVC(C=100.0, random_state=42) #
+	# model = svm.SVC(C=100.0, kernel='linear')
+	# (C=1.0, kernel=’rbf’, degree=3, gamma=’auto_deprecated’, 
+	# coef0=0.0, shrinking=True, probability=False, tol=0.001, 
+	# cache_size=200, class_weight=None, verbose=False, max_iter=-1, 
+	# decision_function_shape=’ovr’, random_state=None)
 
+	param_grid = {'C': [1,1e2,1e3, 5e3, 1e4, 5e4, 1e5],
+              'gamma': [0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1], }
+	model = GridSearchCV(svm.SVC(kernel='linear'), param_grid, cv = 5)
+	model = model.fit(data_train, labels_train)
+	print(model.best_estimator_)
 	print('Evaluating model ... ')
     # svmEvaluate(model, data_test , labels_test)
 
@@ -102,6 +138,14 @@ if __name__ == '__main__':
 	# for imagePath in paths.list_images(args["testing"]):
 	# load the image, convert it to grayscale, describe it,
 	# and classify it
+
+	# pkl_filename = "model_file.pkl"  
+	# with open(pkl_filename, 'wb') as file:  
+	# 	pickle.dump(model, file)
+
+	joblib_file = "D:\\work\\motion-ng\\joblib_model.pkl"  
+	joblib.dump(model, joblib_file)
+
 
 	dem = 0
 	for i in range(0,len(data_test)):
@@ -112,6 +156,7 @@ if __name__ == '__main__':
 			dem = dem + 1
 			# cv2.putText(image, str(prediction_[0]), (10, 30), cv2.FONT_HERSHEY_SIMPLEX,1,(0,255,0),2,cv2.LINE_AA)
 			# cv2.imshow("Image", image)
+
 	accuracy = float(dem/len(data_test))
 	print('so anh nhan dien: ' + str(len(data_test)))
 	print('so anh nhan dien dung: ' + str(dem))
@@ -131,14 +176,17 @@ if __name__ == '__main__':
 	# gray = cv2.cvtColor(img , cv2.COLOR_BGR2GRAY)
 	# hist = desc.describe(gray)
 	hist = np.concatenate((histB,histG,histR))
-	print(hist)
+	# print(hist)
 	prediction_ = model.predict(hist.reshape(1, -1))
 
-	print(prediction_)
+
+	# print(prediction_)
 	# display the image and the prediction
 	cv2.putText(image, str(prediction_[0]), (10, 30), cv2.FONT_HERSHEY_SIMPLEX,1,(0,255,0),2,cv2.LINE_AA)
 	cv2.imshow("Image", image)
 
+	# #############################################################################
+	# get2DPlot()
 
 	# cv2.imshow('gray', gray)
 	cv2.waitKey(0)

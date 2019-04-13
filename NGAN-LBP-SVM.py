@@ -57,11 +57,14 @@ if __name__ == '__main__':
 		# assign labels
 		# label 0: Fire
 		# label 1: Non Fire
+		# label 2: Smoke
 		count = count + 1
 		if(count < numImg + 1):
-			labels.append(0)
-		else:
 			labels.append(1)
+		elif (numImg < count) and (count < 2*numImg+1) :
+			labels.append(2)
+		else:
+			labels.append(0)
 
 		pathImg=pathImg.replace("\n", "")
 		# print(pathImg)		
@@ -116,7 +119,7 @@ if __name__ == '__main__':
 	hist = desc.describe(gray)
 	prediction_ = model.predict(hist.reshape(1, -1))
 
-	print(prediction_)
+	# print(prediction_)
 	# display the image and the prediction
 	cv2.putText(image, str(prediction_[0]), (10, 30), cv2.FONT_HERSHEY_SIMPLEX,1,(0,255,0),2,cv2.LINE_AA)
 	cv2.imshow("Image", image)
