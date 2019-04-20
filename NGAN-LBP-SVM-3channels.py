@@ -84,11 +84,11 @@ if __name__ == '__main__':
 		# label 2: Smoke
 		count = count + 1
 		if(count < numImg + 1):
-			labels.append(1)
+			labels.append(0)
 		# elif(numImg < count) and (count < 2*numImg+1):
 		# 	labels.append(2)
 		else:
-			labels.append(0)
+			labels.append(1)
 
 		pathImg=pathImg.replace("\n", "")
 		# print(pathImg)	
