@@ -1,15 +1,56 @@
-﻿Build started 20-Apr-19 4:49:19 PM.
-     1>Project "D:\work\GIT\Motion2Cpp\Motion2Cpp\Motion2Cpp.vcxproj" on node 2 (Build target(s)).
+﻿Build started 25-Apr-19 3:31:03 PM.
+     1>Project "D:\work\GIT\Fire-Detection\Motion2Cpp\Motion2Cpp\Motion2Cpp.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ID:\work\opencv\build\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt Source.cpp
-         Source.cpp
-     1>d:\work\git\motion2cpp\motion2cpp\source.cpp(136): warning C4244: 'initializing' : conversion from 'float' to 'int', possible loss of data
-     1>d:\work\git\motion2cpp\motion2cpp\source.cpp(203): warning C4244: 'initializing' : conversion from 'double' to 'float', possible loss of data
-       Link:
-         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\work\GIT\Motion2Cpp\Debug\Motion2Cpp.exe" /INCREMENTAL /NOLOGO /LIBPATH:D:\work\opencv\build\x86\vc11\lib opencv_world300d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\work\GIT\Motion2Cpp\Debug\Motion2Cpp.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\work\GIT\Motion2Cpp\Debug\Motion2Cpp.lib" /MACHINE:X86 Debug\Source.obj
-         Motion2Cpp.vcxproj -> D:\work\GIT\Motion2Cpp\Debug\Motion2Cpp.exe
-     1>Done Building Project "D:\work\GIT\Motion2Cpp\Motion2Cpp\Motion2Cpp.vcxproj" (Build target(s)).
+         C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ID:\work\opencv\build\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt ds.cpp fireBehaviorAnalysis.cpp opticalFlowTool.cpp source.cpp
+         source.cpp
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(39): error C2065: 'OFRect' : undeclared identifier
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(39): error C2923: 'std::vector' : 'OFRect' is not a valid template type argument for parameter '_Ty'
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(40): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(40): error C2143: syntax error : missing ',' before '&'
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(58): error C2065: 'OFRect' : undeclared identifier
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(58): error C2923: 'std::multimap' : 'OFRect' is not a valid template type argument for parameter '_Ty'
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(59): error C2065: 'OFRect' : undeclared identifier
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(59): error C2923: 'std::vector' : 'OFRect' is not a valid template type argument for parameter '_Ty'
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\firebehavioranalysis.h(9): error C2061: syntax error : identifier 'DirectionsCount'
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\source.cpp(461): error C2660: 'getContourFeatures' : function does not take 6 arguments
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\source.cpp(477): error C2664: 'assignFeaturePoints' : cannot convert parameter 1 from 'std::multimap<_Kty,_Ty>' to 'std::multimap<_Kty,_Ty> &'
+                 with
+                 [
+                     _Kty=int,
+                     _Ty=OFRect
+                 ]
+                 and
+                 [
+                     _Kty=int,
+                     _Ty=int
+                 ]
+         opticalFlowTool.cpp
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\firebehavioranalysis.h(9): error C2061: syntax error : identifier 'DirectionsCount'
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.cpp(102): warning C4018: '<' : signed/unsigned mismatch
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.cpp(135): warning C4018: '<' : signed/unsigned mismatch
+         fireBehaviorAnalysis.cpp
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(39): error C2065: 'OFRect' : undeclared identifier
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(39): error C2923: 'std::vector' : 'OFRect' is not a valid template type argument for parameter '_Ty'
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(40): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(40): error C2143: syntax error : missing ',' before '&'
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(58): error C2065: 'OFRect' : undeclared identifier
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(58): error C2923: 'std::multimap' : 'OFRect' is not a valid template type argument for parameter '_Ty'
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(59): error C2065: 'OFRect' : undeclared identifier
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(59): error C2923: 'std::vector' : 'OFRect' is not a valid template type argument for parameter '_Ty'
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\firebehavioranalysis.cpp(33): error C3861: 'zeroCount': identifier not found
+         ds.cpp
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(39): error C2065: 'OFRect' : undeclared identifier
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(39): error C2923: 'std::vector' : 'OFRect' is not a valid template type argument for parameter '_Ty'
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(40): error C4430: missing type specifier - int assumed. Note: C++ does not support default-int
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(40): error C2143: syntax error : missing ',' before '&'
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(58): error C2065: 'OFRect' : undeclared identifier
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(58): error C2923: 'std::multimap' : 'OFRect' is not a valid template type argument for parameter '_Ty'
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(59): error C2065: 'OFRect' : undeclared identifier
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\opticalflowtool.h(59): error C2923: 'std::vector' : 'OFRect' is not a valid template type argument for parameter '_Ty'
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\firebehavioranalysis.h(9): error C2061: syntax error : identifier 'DirectionsCount'
+         Generating Code...
+     1>Done Building Project "D:\work\GIT\Fire-Detection\Motion2Cpp\Motion2Cpp\Motion2Cpp.vcxproj" (Build target(s)) -- FAILED.
 
-Build succeeded.
+Build FAILED.
 
-Time Elapsed 00:00:01.95
+Time Elapsed 00:00:04.26

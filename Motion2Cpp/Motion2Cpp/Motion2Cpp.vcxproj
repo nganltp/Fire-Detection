@@ -67,7 +67,15 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Source.cpp" />
+    <ClCompile Include="ds.cpp" />
+    <ClCompile Include="fireBehaviorAnalysis.cpp" />
+    <ClCompile Include="source.cpp" />
+    <ClCompile Include="opticalFlowTool.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="ds.h" />
+    <ClInclude Include="fireBehaviorAnalysis.h" />
+    <ClInclude Include="opticalFlowTool.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
