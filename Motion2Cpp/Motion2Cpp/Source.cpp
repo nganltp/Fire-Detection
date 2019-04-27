@@ -192,7 +192,7 @@ void matchCentroid(
 						cv::rectangle(imgFireAlarm, rectFire, CV_RGB(0, 100, 255), 3);
 
 						cout << "Alarm: " << currentFrame << endl;
-						cv::imshow("Video", imgFireAlarm);
+						//cv::imshow("Video", imgFireAlarm);
 
 						/* halt */
 
@@ -310,7 +310,7 @@ int main()
 		if (imgSrc.empty()) {
 			break;   // exit if unsuccessful or Reach the end of the video
 		}
-		cv::resize(imgSrc, imgSrc, cv::Size(640, 360));
+		cv::resize(imgSrc, imgSrc, sizeImg);
 		// convert rgb to gray 
 		cv::cvtColor(imgSrc, imgGray, CV_BGR2GRAY);
 		
@@ -319,22 +319,17 @@ int main()
 		if (imgSrc.empty()) {
 			break;
 		}
-		cv::resize(imgSrc, imgSrc, cv::Size(640, 360));
-		// the second frame ( gray level )
-		cv::cvtColor(imgSrc, imgCurr, CV_BGR2GRAY);
-		
-		resize(imgSrc,imgSrc,sizeImg);
-        cvtColor(imgSrc, imgGray, COLOR_BGR2GRAY);
 		cv::resize(imgSrc, imgSrc, sizeImg);
 		// the second frame ( gray level )
 		cv::cvtColor(imgSrc, imgCurr, CV_BGR2GRAY);
+		
 		Mat threshImg = Mat::zeros(sizeImg, CV_8UC1);
         GaussianBlur(imgGray, imgGray, Size(21,21), 1.5, 1.5);
        if(firstFrame.empty())
 		{
 			firstFrame =  imgGray.clone();
 		}
-		//<________________________________________MOTION_________________________________________>
+//		//<________________________________________MOTION_________________________________________>
 		//compute the absolute difference between the current frame and
 		absdiff(firstFrame, imgGray, frameDelta);
 		threshold(frameDelta, threshImg, bgThresh,255, THRESH_BINARY);
@@ -346,8 +341,7 @@ int main()
 		//time(&end);
 		//float seconds = difftime(end,start);
 		//cout<< "Fps: " <<(float) 1/seconds << endl;
-		imshow("thresh",threshImg);
-		imshow("imgSrc", imgSrc);
+		
 
 		//________________________________EARLY FIRE DETECTION___________________________________
 		/* assign feature points and get the number of feature */
@@ -374,7 +368,9 @@ int main()
 //		//writer.write(imgFireAlarm);
 //		
 //		std::cout << "< Frame >: " << currentFrame++ << endl;
-//
+
+		//imshow("thresh",threshImg);
+		//imshow("imgSrc", imgSrc);
 		char c=(char)waitKey(25);
 		if(c==27)
 			break;

@@ -213,15 +213,15 @@ void getContourFeatures(
 			/* for each contour pixel count	*/
 			countCtrP = 0;
 			//<________________________PREDICT________________________>
- 			/*Rect bCon =  boundingRect(contour[i]);
+ 			Rect bCon =  boundingRect(contour[i]);
 			Mat crop_img = srcImage(bCon);
 			resize(crop_img,crop_img,cv::Size(64,64));
 			cvtColor(crop_img,crop_img,CV_BGR2GRAY);
-			imshow("crop", crop_img);
 			ComputeLBPFeatureVector_Uniform(crop_img, Size(CELL_SIZE, CELL_SIZE), feature_);
 			int result = svm->predict(feature_);
 			if(result == 0)
-			{*/
+			{
+				imshow("crop", crop_img);
 				//rectangle(srcImage,Point (bCon.x,bCon.y), Point (bCon.x + bCon.width,bCon.y + bCon.height), Scalar(0, 255, 0), 2);
 				/* access points on each contour */
 				for (int j = 0; j < contour[i].size(); ++j){
@@ -235,14 +235,15 @@ void getContourFeatures(
 					++countCtrP;
 					++idxFeature;
 				}
-			//}
-			//else
-			//{
-			//	cout<<"1"<<endl;
-			//}
-			vecOFRect.push_back(ofRect(aRect, countCtrP));
+				/* push to tmp vector for quick access ofrect node */
+				vecOFRect.push_back(ofRect(aRect, countCtrP));
+			}
+			else
+			{
+				cout<<"1"<<endl;
+			}
 		}
-			/* push to tmp vector for quick access ofrect node */
+			
 	}
 }
 
