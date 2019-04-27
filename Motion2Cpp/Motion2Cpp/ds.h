@@ -14,9 +14,6 @@
 #include "opencv2/objdetect/objdetect.hpp"
 #include "opencv2/imgproc/imgproc.hpp"
 
-#include "ds.h"
-#include "opticalFlowTool.h"
-#include "fireBehaviorAnalysis.h"
 
 #include <string>
 #include <ctime>
@@ -30,6 +27,7 @@
 using namespace cv;
 using namespace std;
 using namespace cv::ml;
+
 
 
 typedef struct RectThrd {
@@ -120,7 +118,6 @@ CV_INLINE Centroid centroid(OFRect ofrect){
 	return ctrd;
 }
 
-
 typedef struct DirectionsCount{
 
 	int countRight;
@@ -130,10 +127,10 @@ typedef struct DirectionsCount{
 
 }DirectionsCount;
 
-//
-//CV_INLINE void zeroCount(DirectionsCount & count){
-//	count.countDown = count.countLeft = count.countRight = count.countUp = 0;
-//}
+
+CV_INLINE void zeroCount(DirectionsCount & count){
+	count.countDown = count.countLeft = count.countRight = count.countUp = 0;
+}
 
 
 #endif

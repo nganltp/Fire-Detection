@@ -1,5 +1,5 @@
 #include "opticalFlowTool.h"
-
+#define CELL_SIZE 8
 
 /* Drawing Arrow for Optical Flow */
 //void drawArrow(
@@ -70,6 +70,104 @@ void fireLikeRegion(cv::Mat& mask, const cv::Point pt1, const cv::Point pt2){
 	}
 }
 
+void ComputeLBPImage_Uniform(const Mat &srcImage, Mat &LBPImage)
+{
+    CV_Assert(srcImage.depth() == CV_8U&&srcImage.channels() == 1);
+    LBPImage.create(srcImage.size(), srcImage.type());
+
+    Mat extendedImage;
+    copyMakeBorder(srcImage, extendedImage, 1, 1, 1, 1, BORDER_DEFAULT);
+
+    static const int table[256] = { 1, 2, 3, 4, 5, 0, 6, 7, 8, 0, 0, 0, 9, 0, 10, 11, 12, 0, 0, 0, 0, 0, 0, 0, 13, 0, 0, 0, 14, 0, 15, 16, 17, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 0, 19, 0, 0, 0, 20, 0, 21, 22, 23, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 24, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25,
+        0, 0, 0, 0, 0, 0, 0, 26, 0, 0, 0, 27, 0, 28, 29, 30, 31, 0, 32, 0, 0, 0, 33, 0, 0, 0, 0, 0, 0, 0, 34, 0, 0, 0, 0
+        , 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+        0, 0, 0, 0, 36, 37, 38, 0, 39, 0, 0, 0, 40, 0, 0, 0, 0, 0, 0, 0, 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 42
+        , 43, 44, 0, 45, 0, 0, 0, 46, 0, 0, 0, 0, 0, 0, 0, 47, 48, 49, 0, 50, 0, 0, 0, 51, 52, 53, 0, 54, 55, 56, 57, 58 };
+
+    int heightOfExtendedImage = extendedImage.rows;
+    int widthOfExtendedImage = extendedImage.cols;
+    int widthOfLBP=LBPImage.cols;
+    uchar *rowOfExtendedImage = extendedImage.data+widthOfExtendedImage+1;
+    uchar *rowOfLBPImage = LBPImage.data;
+    for (int y = 1; y <= heightOfExtendedImage - 2; ++y,rowOfExtendedImage += widthOfExtendedImage, rowOfLBPImage += widthOfLBP)
+    {
+        uchar *colOfExtendedImage = rowOfExtendedImage;
+        uchar *colOfLBPImage = rowOfLBPImage;
+        for (int x = 1; x <= widthOfExtendedImage - 2; ++x, ++colOfExtendedImage, ++colOfLBPImage)
+        {
+            int LBPValue = 0;
+            if (colOfExtendedImage[0 - widthOfExtendedImage - 1] >= colOfExtendedImage[0])
+                LBPValue += 128;
+            if (colOfExtendedImage[0 - widthOfExtendedImage] >= colOfExtendedImage[0])
+                LBPValue += 64;
+            if (colOfExtendedImage[0 - widthOfExtendedImage + 1] >= colOfExtendedImage[0])
+                LBPValue += 32;
+            if (colOfExtendedImage[0 + 1] >= colOfExtendedImage[0])
+                LBPValue += 16;
+            if (colOfExtendedImage[0 + widthOfExtendedImage + 1] >= colOfExtendedImage[0])
+                LBPValue += 8;
+            if (colOfExtendedImage[0 + widthOfExtendedImage] >= colOfExtendedImage[0])
+                LBPValue += 4;
+            if (colOfExtendedImage[0 + widthOfExtendedImage - 1] >= colOfExtendedImage[0])
+                LBPValue += 2;
+            if (colOfExtendedImage[0 - 1] >= colOfExtendedImage[0])
+                LBPValue += 1;
+            colOfLBPImage[0] = table[LBPValue];
+        } // x
+
+    }// y
+}
+
+
+void ComputeLBPFeatureVector_Uniform(const Mat &srcImage, Size cellSize, Mat &featureVector)
+{
+    CV_Assert(srcImage.depth() == CV_8U&&srcImage.channels() == 1);
+
+    Mat LBPImage;
+    ComputeLBPImage_Uniform(srcImage,LBPImage);
+
+    int widthOfCell = cellSize.width;
+    int heightOfCell = cellSize.height;
+    int numberOfCell_X = srcImage.cols / widthOfCell;
+	int numberOfCell_Y = srcImage.rows / heightOfCell;
+
+    int numberOfDimension = 58 * numberOfCell_X*numberOfCell_Y;
+    featureVector.create(1, numberOfDimension, CV_32FC1);
+    featureVector.setTo(Scalar(0));
+
+    int stepOfCell=srcImage.cols;
+    int index = -58;
+    float *dataOfFeatureVector=(float *)featureVector.data;
+    for (int y = 0; y <= numberOfCell_Y - 1; ++y)
+    {
+        for (int x = 0; x <= numberOfCell_X - 1; ++x)
+        {
+            index+=58;
+
+            Mat cell = LBPImage(Rect(x * widthOfCell, y * heightOfCell, widthOfCell, heightOfCell));
+            uchar *rowOfCell=cell.data;
+            int sum = 0; 
+            for(int y_Cell=0;y_Cell<=cell.rows-1;++y_Cell,rowOfCell+=stepOfCell)
+            {
+                uchar *colOfCell=rowOfCell;
+                for(int x_Cell=0;x_Cell<=cell.cols-1;++x_Cell,++colOfCell)
+                {
+                    if(colOfCell[0]!=0)
+                    {
+                        ++dataOfFeatureVector[index + colOfCell[0]-1];
+                        ++sum;
+                    }
+                }
+            }
+            for (int i = 0; i <= 57; ++i)
+                dataOfFeatureVector[index + i] /= sum;
+        }
+    }
+}
+
+
 /* get the feature points from contour
 input:
 imgDisplayCntr      : img for display contours
@@ -83,7 +181,13 @@ featuresCurr        : current contours points
 return:
 the number of contour points
 */
+string model_ = "D:\\work\\GIT\\Fire-Detection\\Motion2Cpp\\Motion2Cpp\\LBP-SVM-model.xml";
+//const string& model = model_;
+Ptr<SVM> svm = cv::ml::SVM::load<cv::ml::SVM>(model_);
+Mat feature_;
+
 void getContourFeatures(
+	Mat &srcImage,
 	std::vector<std::vector<cv::Point>>& contour,
 	std::vector<cv::Vec4i>& hierarchy,
 	std::vector<OFRect> & vecOFRect,
@@ -108,44 +212,37 @@ void getContourFeatures(
 		if (aRect.width > trd.rectWidth && aRect.height > trd.rectHeight && fabs(cv::contourArea(contour[i])) > trd.cntrArea) {
 			/* for each contour pixel count	*/
 			countCtrP = 0;
-			//<________________________DRAW CONTOURS AND LOAD MODEL PREDICT_________________________>
-			cout<<"predict"<<endl;
-			//drawContours(threshImg, contours, iContour, Scalar(255), CV_FILLED);
-			//rectContour = boundingRect( contours[i] );
-			//for(int r = 0; r < rectContour.height; r++)
-			//	for(int c = 0; c <  rectContour.width; c++)
-			//	{
-			//		threshImg.at<uchar>(rectContour.x + c , rectContour.y + r) = 0;
-			//	}
-			////<________________________PREDICT________________________>
- 		//	Rect bCon =  boundingRect(contour[i]);
-			//Mat crop_img = frame(bCon);
-			//resize(crop_img,crop_img,cv::Size(64,64));
-			//cvtColor(crop_img,crop_img,CV_BGR2GRAY);
-			//imshow("crop", crop_img);
-			//ComputeLBPFeatureVector_Uniform(crop_img, Size(CELL_SIZE, CELL_SIZE), feature_);
-			//int result = svm->predict(feature_);
-			//if(result == 0)
-			//	rectangle(frame,Point (bCon.x,bCon.y), Point (bCon.x + bCon.width,bCon.y + bCon.height), Scalar(0, 255, 0), 2);
-			//else
-			//	cout<<"1"<<endl;
-		
-		}
-			/* access points on each contour */
-			for (int j = 0; j < contour[i].size(); ++j){
-				p = contour[i][j];
-				//printf(" (%d,%d)\n", p->x, p->y );
-				cv::Point2f feature(static_cast<float>(p.x), static_cast<float>(p.y));
-				if (idxFeature == 0) {
-					featuresPrev.pop_back();
+			//<________________________PREDICT________________________>
+ 			/*Rect bCon =  boundingRect(contour[i]);
+			Mat crop_img = srcImage(bCon);
+			resize(crop_img,crop_img,cv::Size(64,64));
+			cvtColor(crop_img,crop_img,CV_BGR2GRAY);
+			imshow("crop", crop_img);
+			ComputeLBPFeatureVector_Uniform(crop_img, Size(CELL_SIZE, CELL_SIZE), feature_);
+			int result = svm->predict(feature_);
+			if(result == 0)
+			{*/
+				//rectangle(srcImage,Point (bCon.x,bCon.y), Point (bCon.x + bCon.width,bCon.y + bCon.height), Scalar(0, 255, 0), 2);
+				/* access points on each contour */
+				for (int j = 0; j < contour[i].size(); ++j){
+					p = contour[i][j];
+					//printf(" (%d,%d)\n", p->x, p->y );
+					cv::Point2f feature(static_cast<float>(p.x), static_cast<float>(p.y));
+					if (idxFeature == 0) {
+						featuresPrev.pop_back();
+					}
+					featuresPrev.push_back(feature);
+					++countCtrP;
+					++idxFeature;
 				}
-				featuresPrev.push_back(feature);
-				++countCtrP;
-				++idxFeature;
-			}
-
-			/* push to tmp vector for quick access ofrect node */
+			//}
+			//else
+			//{
+			//	cout<<"1"<<endl;
+			//}
 			vecOFRect.push_back(ofRect(aRect, countCtrP));
+		}
+			/* push to tmp vector for quick access ofrect node */
 	}
 }
 

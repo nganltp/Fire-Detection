@@ -19,6 +19,8 @@
 //
 
 void fireLikeRegion(cv::Mat& mask, const cv::Point pt1, const cv::Point pt2);
+void ComputeLBPFeatureVector_Uniform(const Mat &srcImage, Size cellSize, Mat &featureVector);
+void ComputeLBPImage_Uniform(const Mat &srcImage, Mat &LBPImage);
 
 /* get the feature points from contour
 input:
@@ -34,10 +36,11 @@ return:
 the number of contour points
 */
 void getContourFeatures(
+	Mat &srcImage,
 	std::vector<std::vector<cv::Point>>& contour,
 	std::vector<cv::Vec4i>& hierarchy,
-	std::vector< OFRect > & vecOFRect,
-	const RectThrd & trd,
+	std::vector< OFRect >& vecOFRect,
+	const RectThrd& trd,
 	std::vector<cv::Point2f>& featuresPrev,
 	std::vector<cv::Point2f>& featuresCurr
 );
