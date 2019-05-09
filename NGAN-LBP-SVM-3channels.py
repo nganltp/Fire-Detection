@@ -70,8 +70,11 @@ if __name__ == '__main__':
 	data = []
 
 	# parameter for compute LBP
-	radius = 3
-	numPoints = 8*radius 
+	# radius = 3
+	# numPoints = 8*radius 
+
+	radius = 1
+	numPoints = 8
 
 	numImg = 500
 

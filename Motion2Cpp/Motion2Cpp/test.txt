@@ -1,0 +1,7 @@
+I. resize + cvtColor + GaussianBlur
+II. Motion
+III. checkByRGB
+IV. dilate + findContours + getContourFeaturesV. calcOpticalFlowPyrLK
+VI. assignFeaturePoints
+VII. matchCentroid
+_____________________evaluate________________

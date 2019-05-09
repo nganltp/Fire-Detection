@@ -45,6 +45,7 @@ void getContourFeatures(
 	std::vector<cv::Point2f>& featuresCurr
 );
 
+void checkByRGB(const cv::Mat& imgSrc, const cv::Mat& maskMotion, cv::Mat& mask);
 
 /* assign feature points to fire-like obj and then push to multimap
 input:

@@ -130,7 +130,6 @@ bool checkContourEnergy(Centroid & ctrd, const unsigned int pwindows) {
 			++orienFrame;
 		}
 	}
-
 	/* by experience */
 	static const unsigned int thrdPassFrame = pwindows >> 1, thrdStaticFrame = pwindows >> 2, thrdOrienFrame = (pwindows >> 3) + 1;
 
@@ -158,7 +157,6 @@ void matchCentroid(
 	static unsigned int rectCount = 0;
 
 	while (itCentroid != listCentroid.end()) {
-
 		/* setup mulMapBRect upper bound */
 		itOFRectUp = mulMapOFRect.upper_bound((*itCentroid).centroid.x);
 
@@ -182,16 +180,19 @@ void matchCentroid(
 
 				/* push vecFeature to matched listCentorid node */
 				(*itCentroid).dOFRect.push_back((*itOFRect).second.vecFeature);
-
+				if (++((*itCentroid).countFrame) > pwindows)
+						/* recting the fire region */
+						cv::rectangle(imgFireAlarm, rectFire, Scalar(255, 0, 0), 3);
 				/* Update countFrame and judge the threshold of it */
-				if (++((*itCentroid).countFrame) == pwindows) {
+				if (++((*itCentroid).countFrame) == pwindows) { // ==
 					/* GO TO PROCEESING DIRECTION MOTION */
 					if (judgeDirectionsMotion((*itCentroid).vecRect, rectFire) && checkContourPoints(*itCentroid, thrdcp, pwindows) && checkContourEnergy(*itCentroid, pwindows)) {
 
 						/* recting the fire region */
-						cv::rectangle(imgFireAlarm, rectFire, CV_RGB(0, 100, 255), 3);
-
+						cv::rectangle(imgFireAlarm, rectFire, Scalar(255, 0, 0), 3);
+						//imshow("rect",imgFireAlarm);
 						cout << "Alarm: " << currentFrame << endl;
+						//(*itCentroid).countFrame = 0;
 						//cv::imshow("Video", imgFireAlarm);
 
 						/* halt */
@@ -256,7 +257,9 @@ void matchCentroid(
 
 int main()
 {
-    VideoCapture cap("D:\\work\\EarlyFireDetection-master\\EarlyFireDetection\\EarlyFireDetection\\test_6.mp4"); // open the default camera
+	string namevideo = "NONE_lamp.mp4";
+	VideoCapture cap("D:\\work\\GIT\\testVideo\\" + namevideo); // open the default camera
+
     if(!cap.isOpened()){
 		cout << "Error opening video stream or file" << endl;
     return -1;
@@ -267,8 +270,11 @@ int main()
 		fprintf(stderr, "Cannot open video!\n");
 		return 1;
 	}
-	int w = 500;
-	int h = int(imgSrc.rows*500/imgSrc.cols);
+	//int w = 500;
+	//int h = int(imgSrc.rows*500/imgSrc.cols);
+	int w = 427;//640
+	int h = 240;//360
+	//VideoWriter video("D:\\work\\GIT\\writeVideo\\out.avi", -1 ,20, Size(w,h),true);
 	cv::resize(imgSrc, imgSrc, cv::Size(w, h));
 	cv::Size sizeImg = imgSrc.size();
 	Mat frameDelta, firstFrame;
@@ -276,6 +282,8 @@ int main()
 	Mat imgCurr(sizeImg, CV_8UC1);
 	Mat imgGray(sizeImg, CV_8UC1);
 	int bgThresh = 25, minContourArea = 80;
+
+	Mat maskRGB(sizeImg, CV_8UC1);
 
 	Rect rectContour;
 	time_t start,end;
@@ -297,23 +305,30 @@ int main()
 	std::vector<float> featureErrors;
 	cv::Size sizeWin(WIN_SIZE, WIN_SIZE);
 	RectThrd rThrd = rectThrd(RECT_WIDTH_THRESHOLD, RECT_HEIGHT_THRESHOLD, CONTOUR_AREA_THRESHOLD);
+
+	Mat element = getStructuringElement(CV_SHAPE_RECT, Size(3,5), Point(1,2));
+
+
+
 	while(1)
     {
+		maskRGB.setTo(cv::Scalar(0, 0));
 		featuresPrev.clear();
 		featuresPrev.push_back(cv::Point2f(0, 0));
 		featuresCurr.clear();
 		featuresCurr.push_back(cv::Point2f(0, 0));
 		
-		time(&start);
+		double t = (double)getTickCount();
 
         cap.read(imgSrc);  // get the first frame 
 		if (imgSrc.empty()) {
 			break;   // exit if unsuccessful or Reach the end of the video
 		}
 		cv::resize(imgSrc, imgSrc, sizeImg);
+		
 		// convert rgb to gray 
 		cv::cvtColor(imgSrc, imgGray, CV_BGR2GRAY);
-		
+
 		cap.read(imgSrc); // get the second frame
 
 		if (imgSrc.empty()) {
@@ -322,6 +337,8 @@ int main()
 		cv::resize(imgSrc, imgSrc, sizeImg);
 		// the second frame ( gray level )
 		cv::cvtColor(imgSrc, imgCurr, CV_BGR2GRAY);
+		
+		//video.write(imgSrc);
 		
 		Mat threshImg = Mat::zeros(sizeImg, CV_8UC1);
         GaussianBlur(imgGray, imgGray, Size(21,21), 1.5, 1.5);
@@ -334,20 +351,21 @@ int main()
 		absdiff(firstFrame, imgGray, frameDelta);
 		threshold(frameDelta, threshImg, bgThresh,255, THRESH_BINARY);
 		//dilate(threshImg, threshImg, iterations = 2); 
+
+		checkByRGB(imgSrc,threshImg,maskRGB);
+		cv::imshow("MaskRGB", maskRGB);
+		dilate(maskRGB, maskRGB,element);
+
 		vector<Vec4i> hierarchy;
 		vector<vector<Point>> contour;
 		//cout<<contours.size();
-		findContours(threshImg.clone(), contour, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE); 
-		//time(&end);
-		//float seconds = difftime(end,start);
-		//cout<< "Fps: " <<(float) 1/seconds << endl;
-		
+		findContours(/*threshImg*/maskRGB.clone(), contour, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE); 
 
 		//________________________________EARLY FIRE DETECTION___________________________________
 		/* assign feature points and get the number of feature */
 		getContourFeatures(imgSrc,contour, hierarchy, vecOFRect, rThrd, featuresPrev, featuresCurr);
 
-//		// Pyramid L-K Optical Flow
+		// Pyramid L-K Optical Flow
 		cv::calcOpticalFlowPyrLK(
 			imgGray,
 			imgCurr,
@@ -359,18 +377,23 @@ int main()
 			2,
 			cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 20, 0.3),
 			0);
-////		/* assign feature points to fire-like obj and then push to multimap */
-		assignFeaturePoints(mulMapOFRect, vecOFRect, featureFound, featuresPrev, featuresCurr);
-////
-////		/* compare the mulMapOFRect space with listCentroid space, if matching insert to listCentroid space as candidate fire-like obj */
-		matchCentroid(imgSrc, listCentroid, mulMapOFRect, currentFrame, CONTOUR_POINTS_THRESHOLD, PROCESSING_WINDOWS);
-////
-//		//writer.write(imgFireAlarm);
-//		
-//		std::cout << "< Frame >: " << currentFrame++ << endl;
 
-		//imshow("thresh",threshImg);
-		//imshow("imgSrc", imgSrc);
+		/* assign feature points to fire-like obj and then push to multimap */
+		assignFeaturePoints(mulMapOFRect, vecOFRect, featureFound, featuresPrev, featuresCurr);
+
+		/* compare the mulMapOFRect space with listCentroid space, if matching insert to listCentroid space as candidate fire-like obj */
+		matchCentroid(imgSrc, listCentroid, mulMapOFRect, currentFrame, CONTOUR_POINTS_THRESHOLD, PROCESSING_WINDOWS);
+
+		//writer.write(imgFireAlarm);
+		currentFrame++;
+		//std::cout << "< Frame >: " << currentFrame++ << endl;
+
+		t =((double)cvGetTickCount()-t)/getTickFrequency();
+		//cout<<"FPS"<<1/t<<endl;
+		
+
+		imshow("thresh",threshImg);
+		imshow("imgSrc", imgSrc);
 		char c=(char)waitKey(25);
 		if(c==27)
 			break;
@@ -382,6 +405,5 @@ int main()
 	imgGray.release();
 	frameDelta.release();
 	cv::destroyAllWindows();
-	destroyAllWindows();
 	return 0;
 }

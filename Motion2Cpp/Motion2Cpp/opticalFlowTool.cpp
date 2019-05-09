@@ -136,7 +136,7 @@ void ComputeLBPFeatureVector_Uniform(const Mat &srcImage, Size cellSize, Mat &fe
     int numberOfDimension = 58 * numberOfCell_X*numberOfCell_Y;
     featureVector.create(1, numberOfDimension, CV_32FC1);
     featureVector.setTo(Scalar(0));
-
+	
     int stepOfCell=srcImage.cols;
     int index = -58;
     float *dataOfFeatureVector=(float *)featureVector.data;
@@ -186,6 +186,37 @@ string model_ = "D:\\work\\GIT\\Fire-Detection\\Motion2Cpp\\Motion2Cpp\\LBP-SVM-
 Ptr<SVM> svm = cv::ml::SVM::load<cv::ml::SVM>(model_);
 Mat feature_;
 
+void checkByRGB(const cv::Mat& imgSrc, const cv::Mat& maskMotion, cv::Mat& mask) {
+
+	static const int step = imgSrc.step / sizeof(uchar);
+	static const int RT = 230; //default 230
+
+	static uchar* dataSrc = NULL;
+	dataSrc = reinterpret_cast<uchar*>(imgSrc.data);
+
+	// mask
+	static const int stepMask = mask.step / sizeof(uchar);
+	static uchar* dataMask = NULL;
+	dataMask = reinterpret_cast<uchar*>(mask.data);
+	static uchar* dataMaskMotion = NULL;
+	dataMaskMotion = reinterpret_cast<uchar*>(maskMotion.data);
+
+	static int i = 0, j = 0, k = 0, idx = 0;
+	for (i = 0; i < imgSrc.size().height; ++i) {
+		for (j = 0, k = 0; j < step; j += 3, ++k) {
+			idx = i * step + j;
+			if (dataMaskMotion[i * stepMask + k] == 255 && dataSrc[idx + 2] > RT && dataSrc[idx + 2] >= dataSrc[idx + 1] && dataSrc[idx + 1] > dataSrc[idx]) {  // RGB color model determine rule
+				dataMask[i * stepMask + k] = static_cast<uchar>(255);
+			}
+		}
+	}
+	for(int i = 0;i<imgSrc.size().height;i++)
+		for(int j = 0; j < imgSrc.size().width;j++)
+		{
+
+		}
+}
+
 void getContourFeatures(
 	Mat &srcImage,
 	std::vector<std::vector<cv::Point>>& contour,
@@ -201,6 +232,7 @@ void getContourFeatures(
 	static unsigned int countCtrP;
 
 	int idxFeature = 0;
+
 
 	/* thresholding on connected component */
 	for (int i = 0; i < contour.size(); ++i) {  // contour-based visiting
@@ -221,8 +253,8 @@ void getContourFeatures(
 			int result = svm->predict(feature_);
 			if(result == 0)
 			{
-				imshow("crop", crop_img);
-				//rectangle(srcImage,Point (bCon.x,bCon.y), Point (bCon.x + bCon.width,bCon.y + bCon.height), Scalar(0, 255, 0), 2);
+				//imshow("crop", crop_img);
+				rectangle(srcImage,Point (bCon.x,bCon.y), Point (bCon.x + bCon.width,bCon.y + bCon.height), Scalar(0, 0, 255), 2);
 				/* access points on each contour */
 				for (int j = 0; j < contour[i].size(); ++j){
 					p = contour[i][j];
@@ -234,13 +266,14 @@ void getContourFeatures(
 					featuresPrev.push_back(feature);
 					++countCtrP;
 					++idxFeature;
+					//cout<<"0"<<endl;
 				}
 				/* push to tmp vector for quick access ofrect node */
 				vecOFRect.push_back(ofRect(aRect, countCtrP));
 			}
 			else
 			{
-				cout<<"1"<<endl;
+				//cout<<"1"<<endl;
 			}
 		}
 			
