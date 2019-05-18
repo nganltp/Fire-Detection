@@ -194,7 +194,7 @@ void checkByRGB(const cv::Mat& imgSrc, const cv::Mat& maskMotion, cv::Mat& mask)
 	static uchar* dataSrc = NULL;
 	dataSrc = reinterpret_cast<uchar*>(imgSrc.data);
 
-	// mask
+	//mask
 	static const int stepMask = mask.step / sizeof(uchar);
 	static uchar* dataMask = NULL;
 	dataMask = reinterpret_cast<uchar*>(mask.data);
@@ -210,11 +210,11 @@ void checkByRGB(const cv::Mat& imgSrc, const cv::Mat& maskMotion, cv::Mat& mask)
 			}
 		}
 	}
-	for(int i = 0;i<imgSrc.size().height;i++)
+	/*for(int i = 0;i<imgSrc.size().height;i++)
 		for(int j = 0; j < imgSrc.size().width;j++)
 		{
 
-		}
+		}*/
 }
 
 void getContourFeatures(
@@ -249,7 +249,7 @@ void getContourFeatures(
 			Mat crop_img = srcImage(bCon);
 			resize(crop_img,crop_img,cv::Size(64,64));
 			cvtColor(crop_img,crop_img,CV_BGR2GRAY);
-			ComputeLBPFeatureVector_Uniform(crop_img, Size(CELL_SIZE, CELL_SIZE), feature_);
+			ComputeLBPFeatureVector_Uniform(crop_img, Size(CELL_SIZE, CELL_SIZE), feature_);   
 			int result = svm->predict(feature_);
 			if(result == 0)
 			{

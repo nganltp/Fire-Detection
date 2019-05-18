@@ -1,7 +1,8 @@
 #include "ds.h"
 #include "opticalFlowTool.h"
 #include "fireBehaviorAnalysis.h"
-
+#include <fstream>
+int demAlarm = 0;
 /* Non-named namespace, global constants */
 namespace{
 
@@ -42,7 +43,6 @@ bool checkContourPoints(Centroid & ctrd, const unsigned int thrdcp, const unsign
 
 	return (countFrame < pwindows / 3) ? true : false;
 }
-
 
 void motionOrientationHist(std::vector< Feature > & vecFeature, unsigned int orien[4]){
 
@@ -143,7 +143,6 @@ void matchCentroid(
 	int currentFrame, const int thrdcp,
 	const unsigned int pwindows
 ){
-
 	static std::list< Centroid >::iterator itCentroid;		             // iterator of listCentroid
 	static std::multimap< int, OFRect >::iterator itOFRect, itOFRectUp;  // iterator of multimapBRect
 
@@ -192,6 +191,7 @@ void matchCentroid(
 						cv::rectangle(imgFireAlarm, rectFire, Scalar(255, 0, 0), 3);
 						//imshow("rect",imgFireAlarm);
 						cout << "Alarm: " << currentFrame << endl;
+						demAlarm++;
 						//(*itCentroid).countFrame = 0;
 						//cv::imshow("Video", imgFireAlarm);
 
@@ -257,13 +257,14 @@ void matchCentroid(
 
 int main()
 {
-	string namevideo = "NONE_lamp.mp4";
+	string namevideo = "factory_01_Trim.mp4";
 	VideoCapture cap("D:\\work\\GIT\\testVideo\\" + namevideo); // open the default camera
 
     if(!cap.isOpened()){
 		cout << "Error opening video stream or file" << endl;
     return -1;
   }
+
 	cv::Mat imgSrc;
 	cap.read(imgSrc);
 	if (imgSrc.empty()) {
@@ -272,7 +273,7 @@ int main()
 	}
 	//int w = 500;
 	//int h = int(imgSrc.rows*500/imgSrc.cols);
-	int w = 427;//640
+	int w = 320;//640 //360 //320 //427
 	int h = 240;//360
 	//VideoWriter video("D:\\work\\GIT\\writeVideo\\out.avi", -1 ,20, Size(w,h),true);
 	cv::resize(imgSrc, imgSrc, cv::Size(w, h));
@@ -281,7 +282,7 @@ int main()
 
 	Mat imgCurr(sizeImg, CV_8UC1);
 	Mat imgGray(sizeImg, CV_8UC1);
-	int bgThresh = 25, minContourArea = 80;
+	int bgThresh = 25/*defaul 25*/, minContourArea = 80;
 
 	Mat maskRGB(sizeImg, CV_8UC1);
 
@@ -292,14 +293,14 @@ int main()
 	unsigned long currentFrame = 0;
 
 	/* Rect Motion */
-	std::list< Centroid > listCentroid;							  // Centroid container
-	std::vector< OFRect > vecOFRect;							  // tmp container for ofrect
-	std::multimap< int, OFRect > mulMapOFRect;					  // BRect container
+	std::list< Centroid > listCentroid;							// Centroid container
+	std::vector< OFRect > vecOFRect;							// tmp container for ofrect
+	std::multimap< int, OFRect > mulMapOFRect;					// BRect container
 	
 	// Buffer for Pyramid image  
 	std::vector<cv::Point2f> featuresPrev;
 	std::vector<cv::Point2f> featuresCurr;
-	
+
 	// Pyramid Lucas-Kanade 
 	std::vector<uchar> featureFound;
 	std::vector<float> featureErrors;
@@ -309,6 +310,20 @@ int main()
 	Mat element = getStructuringElement(CV_SHAPE_RECT, Size(3,5), Point(1,2));
 
 
+	ofstream file;
+	file.open ("D:\\work\\GIT\\Fire-Detection\\Motion2Cpp\\Motion2Cpp\\test.txt"/*, ios::app*/);
+	file <<"PROGRAM FIRE DETECTION\n"
+			<<"Format of file:\n"
+			<<"I. total_of_I resize cvtColor GaussianBlur\n"
+			<<"II. Motion\n"
+			<<"III. checkByRGB\n"
+			<<"IV. dilate + findContours + getContourFeatures\n"
+			<<"V. calcOpticalFlowPyrLK\n"
+			<<"VI. assignFeaturePoints\n"
+			<<"VII. matchCentroid\n"
+			<<"TOTAL:\n"
+			<<"___________________________evaluate___________________________\n";
+	//file.close();
 
 	while(1)
     {
@@ -317,15 +332,18 @@ int main()
 		featuresPrev.push_back(cv::Point2f(0, 0));
 		featuresCurr.clear();
 		featuresCurr.push_back(cv::Point2f(0, 0));
-		
-		double t = (double)getTickCount();
+		vector<Vec4i> hierarchy;
+		vector<vector<Point>> contour;
 
-        cap.read(imgSrc);  // get the first frame 
+		//double t = (double)getTickCount();
+		//t =((double)cvGetTickCount()-t)/getTickFrequency();
+		file <<"Frame: " << currentFrame << "\n";
+		cap.read(imgSrc);  // get the first frame 
 		if (imgSrc.empty()) {
 			break;   // exit if unsuccessful or Reach the end of the video
 		}
 		cv::resize(imgSrc, imgSrc, sizeImg);
-		
+
 		// convert rgb to gray 
 		cv::cvtColor(imgSrc, imgGray, CV_BGR2GRAY);
 
@@ -334,37 +352,60 @@ int main()
 		if (imgSrc.empty()) {
 			break;
 		}
+
+		Mat threshImg = Mat::zeros(sizeImg, CV_8UC1);
+		double t_I = (double)getTickCount();
+
+		double t_I_1 = (double)getTickCount();
 		cv::resize(imgSrc, imgSrc, sizeImg);
+		t_I_1 = ((double)cvGetTickCount()-t_I_1)*1000/getTickFrequency();
+
 		// the second frame ( gray level )
+		double t_I_2 = (double)getTickCount();
 		cv::cvtColor(imgSrc, imgCurr, CV_BGR2GRAY);
+		t_I_2 = ((double)cvGetTickCount()-t_I_2)*1000/getTickFrequency();
 		
 		//video.write(imgSrc);
-		
-		Mat threshImg = Mat::zeros(sizeImg, CV_8UC1);
-        GaussianBlur(imgGray, imgGray, Size(21,21), 1.5, 1.5);
-       if(firstFrame.empty())
+		double t_I_3 = (double)getTickCount();
+		cv::GaussianBlur(imgGray, imgGray, Size(21,21), 1.5, 1.5);
+		t_I_3 = ((double)cvGetTickCount()-t_I_3)*1000/getTickFrequency();
+
+		t_I = ((double)cvGetTickCount()-t_I)*1000/getTickFrequency();
+		file <<t_I<<" "<<t_I_1<<" "<<t_I_2<<" "<<t_I_3<<"\n";
+        if(firstFrame.empty())
 		{
 			firstFrame =  imgGray.clone();
 		}
-//		//<________________________________________MOTION_________________________________________>
+
+		//<________________________________________MOTION_________________________________________>
 		//compute the absolute difference between the current frame and
+		imshow("firstFrame",firstFrame);
+		imshow("imgGray",imgGray);
+		double t_II = (double)getTickCount();
 		absdiff(firstFrame, imgGray, frameDelta);
-		threshold(frameDelta, threshImg, bgThresh,255, THRESH_BINARY);
+		imshow("frameDelta",frameDelta);
+		cv::threshold(frameDelta, threshImg, bgThresh,255, THRESH_BINARY);
+		t_II = ((double)cvGetTickCount()-t_II)*1000/getTickFrequency();
+		file <<t_II<<"\n";
 		//dilate(threshImg, threshImg, iterations = 2); 
-
+		
+		double t_III = (double)getTickCount();
 		checkByRGB(imgSrc,threshImg,maskRGB);
+		t_III = ((double)cvGetTickCount()-t_III)*1000/getTickFrequency();
+		file <<t_III<<"\n";
 		cv::imshow("MaskRGB", maskRGB);
-		dilate(maskRGB, maskRGB,element);
-
-		vector<Vec4i> hierarchy;
-		vector<vector<Point>> contour;
+		
+		double t_IV = (double)getTickCount();
+		cv::dilate(maskRGB, maskRGB,element);
 		//cout<<contours.size();
-		findContours(/*threshImg*/maskRGB.clone(), contour, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE); 
-
+		cv::findContours(/*threshImg*/maskRGB.clone(), contour, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE); 
 		//________________________________EARLY FIRE DETECTION___________________________________
 		/* assign feature points and get the number of feature */
 		getContourFeatures(imgSrc,contour, hierarchy, vecOFRect, rThrd, featuresPrev, featuresCurr);
-
+		t_IV = ((double)cvGetTickCount()-t_IV)*1000/getTickFrequency();
+		file <<t_IV<<"\n";
+		
+		double t_V = (double)getTickCount();
 		// Pyramid L-K Optical Flow
 		cv::calcOpticalFlowPyrLK(
 			imgGray,
@@ -377,29 +418,38 @@ int main()
 			2,
 			cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 20, 0.3),
 			0);
+		t_V = ((double)cvGetTickCount()-t_V)*1000/getTickFrequency();
+		file <<t_V<<"\n";
 
+		double t_VI = (double)getTickCount();
 		/* assign feature points to fire-like obj and then push to multimap */
 		assignFeaturePoints(mulMapOFRect, vecOFRect, featureFound, featuresPrev, featuresCurr);
+		t_VI = ((double)cvGetTickCount()-t_VI)*1000/getTickFrequency();
+		file <<t_VI<<"\n";
 
+		double t_VII = (double)getTickCount();
 		/* compare the mulMapOFRect space with listCentroid space, if matching insert to listCentroid space as candidate fire-like obj */
 		matchCentroid(imgSrc, listCentroid, mulMapOFRect, currentFrame, CONTOUR_POINTS_THRESHOLD, PROCESSING_WINDOWS);
+		t_VII = ((double)cvGetTickCount()-t_VII)*1000/getTickFrequency();
+		file <<t_VII<<"\n";
 
 		//writer.write(imgFireAlarm);
-		currentFrame++;
-		//std::cout << "< Frame >: " << currentFrame++ << endl;
+		currentFrame +=2;
+		//std::cout << "< Frame >: " << currentFrame << endl;
 
-		t =((double)cvGetTickCount()-t)/getTickFrequency();
+		//t =((double)cvGetTickCount()-t)/getTickFrequency();
 		//cout<<"FPS"<<1/t<<endl;
 		
-
-		imshow("thresh",threshImg);
-		imshow("imgSrc", imgSrc);
-		char c=(char)waitKey(25);
+		file<<"TOTAL:" << t_I + t_II + t_III + t_IV + t_V + t_VI + t_VII <<"\n\n";
+		cv::imshow("Motion",threshImg);
+		cv::imshow("imgSrc", imgSrc);
+		char c=(char)waitKey(30);
 		if(c==27)
 			break;
         
    }
-
+    file<<"num frame of Alarm "<<demAlarm;
+	file.close();
 	cap.release();
 	imgCurr.release();
 	imgGray.release();
