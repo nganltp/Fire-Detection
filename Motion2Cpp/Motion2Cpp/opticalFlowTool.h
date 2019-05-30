@@ -58,6 +58,8 @@ output:
 mulMapOFRect:	new candidate fire-like obj in current frame(with rectangle and motion vector information)
 
 */
+
+void checkByYUV(const cv::Mat& imgSrc, const cv::Mat& maskMotion, cv::Mat& mask);
 void assignFeaturePoints(
 	std::multimap< int, OFRect > & mulMapOFRect,
 	std::vector< OFRect > & vecOFRect,

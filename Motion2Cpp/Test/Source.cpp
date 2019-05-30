@@ -56,11 +56,6 @@ void on_high_V_thresh_trackbar(int, void *)
 
 void checkByYUV(const cv::Mat& imgSrc, cv::Mat& mask) {
 
-	/*size.total = size.width * size.height;
-	y = yuv[position.y * size.width + position.x];
-	u = yuv[(position.y / 2) * (size.width / 2) + (position.x / 2) + size.total];
-	v = yuv[(position.y / 2) * (size.width / 2) + (position.x / 2) + size.total + (size.total / 4)];
-	*/
 	static const int step = imgSrc.step / sizeof(uchar);
 	static uchar* dataSrc = NULL;
 	dataSrc = reinterpret_cast<uchar*>(imgSrc.data);
@@ -69,7 +64,7 @@ void checkByYUV(const cv::Mat& imgSrc, cv::Mat& mask) {
 	static const int stepMask = mask.step / sizeof(uchar);
 	static uchar* dataMask = NULL;
 	dataMask = reinterpret_cast<uchar*>(mask.data);
-	
+
 	int isize = mask.rows * mask.cols;
 	int posU = isize;
 	int posV = isize * 5/4;
@@ -79,12 +74,13 @@ void checkByYUV(const cv::Mat& imgSrc, cv::Mat& mask) {
 	{
 		if(dataSrc[posU] >= low_U && dataSrc[posU] <= high_U && dataSrc[posV] >= low_V && dataSrc[posV] <= high_V) //check UV value
 		{
+
 			int thuong =(int)( (posU - isize) /(mask.cols/2) );
 			int du = (posU - isize)%(mask.cols/2);
-			posY1 = thuong * 2*(mask.cols + du);
+			posY1 = thuong * 2*mask.cols + 2*du;
 			posY2 = posY1 + 1;
 			posY3 = posY1 + mask.cols;
-			posY4 = posY3 + 1;
+ 			posY4 = posY3 + 1;
 
 			if(dataSrc[posY1] >= low_Y && dataSrc[posY1]  <= high_Y)
 				dataMask[posY1] = static_cast<uchar>(255);
@@ -105,42 +101,41 @@ void checkByYUV(const cv::Mat& imgSrc, cv::Mat& mask) {
 }
 
 
-int main()
-{
-	
-	Mat frame, yuv, mask;
-	cv::Mat image;
-		image = cv::imread("RGB.png", CV_LOAD_IMAGE_COLOR);   // Read the file
+//int main()
+//{
+//	Mat frame, yuv, mask;
+//	cv::Mat image;
+//		image = cv::imread("RGB.png", CV_LOAD_IMAGE_COLOR);   // Read the file
+//
+//		if(! image.data )                              // Check for invalid input
+//		{
+//			cout <<  "Could not open or find the image" << std::endl ;
+//			return -1;
+//		}
+//	//cv::resize(image, image, cv::Size(200,200));
+//	cv::cvtColor(image, yuv, cv::COLOR_RGB2YUV_I420);
+//	cv::Mat maskYUV(cv::Size(1026,632),CV_8UC1);
+//	maskYUV.setTo(cv::Scalar(0, 0));
+//	namedWindow("Threshold Selection", WINDOW_NORMAL);
 
-		if(! image.data )                              // Check for invalid input
-		{
-			cout <<  "Could not open or find the image" << std::endl ;
-			return -1;
-		}
-	cv::resize(image, image, cv::Size(770,472));
-	cv::cvtColor(image, yuv, cv::COLOR_RGB2YUV_I420);
-	cv::Mat maskYUV(cv::Size(770,472),CV_8UC1);
-	maskYUV.setTo(cv::Scalar(0, 0));
-	namedWindow("Threshold Selection", WINDOW_NORMAL);
-
-	createTrackbar("Low Y", "Threshold Selection", &low_Y, 255, on_low_Y_thresh_trackbar);
-	createTrackbar("High Y", "Threshold Selection", &high_Y, 255, on_high_Y_thresh_trackbar);
-	createTrackbar("Low U", "Threshold Selection", &low_U, 255, on_low_U_thresh_trackbar);
-	createTrackbar("High U", "Threshold Selection", &high_U, 255, on_high_U_thresh_trackbar);
-	createTrackbar("Low V", "Threshold Selection", &low_V, 255, on_low_V_thresh_trackbar);
-	createTrackbar("High V", "Threshold Selection", &high_V, 255, on_high_V_thresh_trackbar);
-	
-	while ((char)waitKey(1) != 'q')
-	{
-		//inRange(hsv, Scalar(low_Y, low_U, low_V), Scalar(high_Y, high_U, high_V), mask);
-		
-		checkByYUV(yuv, maskYUV);
-		imshow("frame", image);
-		imshow("mask", maskYUV);
-	}	
-
-	return 0;
-}
+//	createTrackbar("Low Y", "Threshold Selection", &low_Y, 255, on_low_Y_thresh_trackbar);
+//	createTrackbar("High Y", "Threshold Selection", &high_Y, 255, on_high_Y_thresh_trackbar);
+//	createTrackbar("Low U", "Threshold Selection", &low_U, 255, on_low_U_thresh_trackbar);
+//	createTrackbar("High U", "Threshold Selection", &high_U, 255, on_high_U_thresh_trackbar);
+//	createTrackbar("Low V", "Threshold Selection", &low_V, 255, on_low_V_thresh_trackbar);
+//	createTrackbar("High V", "Threshold Selection", &high_V, 255, on_high_V_thresh_trackbar);
+//	
+//	while ((char)waitKey(1) != 'q')
+//	{
+//		//inRange(hsv, Scalar(low_Y, low_U, low_V), Scalar(high_Y, high_U, high_V), mask);
+//		
+//		checkByYUV(yuv, maskYUV);
+//		imshow("frame", image);
+//		imshow("mask", maskYUV);
+//	}	
+//
+//	return 0;
+//}
 
 void checkByRGB(const cv::Mat& imgSrc, cv::Mat& mask) {
 	static const int step = imgSrc.step / sizeof(uchar);

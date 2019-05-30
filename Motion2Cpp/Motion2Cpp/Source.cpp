@@ -20,6 +20,8 @@ namespace{
 	/* Processing Window Size (Frame) */
 	const unsigned int PROCESSING_WINDOWS = 15; //default: 15
 
+	const double ACCUMULATE_WEIGHTED_ALPHA_BGM = 0.01;
+
 	/* Fire-like Region Threshold */
 	const int RECT_WIDTH_THRESHOLD = 5; //default: 5
 	const int RECT_HEIGHT_THRESHOLD = 5; //default: 5
@@ -253,11 +255,11 @@ void matchCentroid(
 	/* clear up container */
 	mulMapOFRect.clear();
 }
-
+ 
 
 int main()
 {
-	string namevideo = "factory_01_Trim.mp4";
+	string namevideo = "NONE_alarmlight.mp4";
 	VideoCapture cap("D:\\work\\GIT\\testVideo\\" + namevideo); // open the default camera
 
     if(!cap.isOpened()){
@@ -278,11 +280,12 @@ int main()
 	//VideoWriter video("D:\\work\\GIT\\writeVideo\\out.avi", -1 ,20, Size(w,h),true);
 	cv::resize(imgSrc, imgSrc, cv::Size(w, h));
 	cv::Size sizeImg = imgSrc.size();
-	Mat frameDelta, firstFrame;
+	Mat frameDelta, imgBackgroundModel;
 
 	Mat imgCurr(sizeImg, CV_8UC1);
 	Mat imgGray(sizeImg, CV_8UC1);
 	int bgThresh = 25/*defaul 25*/, minContourArea = 80;
+	cv::Mat img32FBackgroundModel(sizeImg, CV_32FC1);
 
 	Mat maskRGB(sizeImg, CV_8UC1);
 
@@ -342,10 +345,12 @@ int main()
 		if (imgSrc.empty()) {
 			break;   // exit if unsuccessful or Reach the end of the video
 		}
+
 		cv::resize(imgSrc, imgSrc, sizeImg);
+		cv::cvtColor(imgSrc, imgSrc, cv::COLOR_RGB2YUV_I420); //YUV
 
 		// convert rgb to gray 
-		cv::cvtColor(imgSrc, imgGray, CV_BGR2GRAY);
+		cv::cvtColor(imgSrc, imgGray, COLOR_YUV2GRAY_I420); //YUV
 
 		cap.read(imgSrc); // get the second frame
 
@@ -354,84 +359,99 @@ int main()
 		}
 
 		Mat threshImg = Mat::zeros(sizeImg, CV_8UC1);
-		double t_I = (double)getTickCount();
+		//double t_I = (double)getTickCount();
 
-		double t_I_1 = (double)getTickCount();
+		//double t_I_1 = (double)getTickCount();
 		cv::resize(imgSrc, imgSrc, sizeImg);
-		t_I_1 = ((double)cvGetTickCount()-t_I_1)*1000/getTickFrequency();
+		//t_I_1 = ((double)cvGetTickCount()-t_I_1)*1000/getTickFrequency();
 
 		// the second frame ( gray level )
-		double t_I_2 = (double)getTickCount();
-		cv::cvtColor(imgSrc, imgCurr, CV_BGR2GRAY);
-		t_I_2 = ((double)cvGetTickCount()-t_I_2)*1000/getTickFrequency();
+		//double t_I_2 = (double)getTickCount();
+		cv::cvtColor(imgSrc, imgSrc, COLOR_RGB2YUV_I420);
+		cv::cvtColor(imgSrc, imgCurr, COLOR_YUV2GRAY_I420);
+		//t_I_2 = ((double)cvGetTickCount()-t_I_2)*1000/getTickFrequency();
 		
 		//video.write(imgSrc);
-		double t_I_3 = (double)getTickCount();
+		//double t_I_3 = (double)getTickCount();
 		cv::GaussianBlur(imgGray, imgGray, Size(21,21), 1.5, 1.5);
-		t_I_3 = ((double)cvGetTickCount()-t_I_3)*1000/getTickFrequency();
+		//t_I_3 = ((double)cvGetTickCount()-t_I_3)*1000/getTickFrequency();
 
-		t_I = ((double)cvGetTickCount()-t_I)*1000/getTickFrequency();
-		file <<t_I<<" "<<t_I_1<<" "<<t_I_2<<" "<<t_I_3<<"\n";
-        if(firstFrame.empty())
+		//t_I = ((double)cvGetTickCount()-t_I)*1000/getTickFrequency();
+		//file <<t_I<<" "<<t_I_1<<" "<<t_I_2<<" "<<t_I_3<<"\n";
+        if(imgBackgroundModel.empty())
 		{
-			firstFrame =  imgGray.clone();
+			imgBackgroundModel =  imgGray.clone();
 		}
 
 		//<________________________________________MOTION_________________________________________>
 		//compute the absolute difference between the current frame and
-		imshow("firstFrame",firstFrame);
+		imshow("imgBackgroundModel",imgBackgroundModel);
 		imshow("imgGray",imgGray);
-		double t_II = (double)getTickCount();
-		absdiff(firstFrame, imgGray, frameDelta);
+		//double t_II = (double)getTickCount();
+		absdiff(imgBackgroundModel, imgGray, frameDelta);
 		imshow("frameDelta",frameDelta);
 		cv::threshold(frameDelta, threshImg, bgThresh,255, THRESH_BINARY);
-		t_II = ((double)cvGetTickCount()-t_II)*1000/getTickFrequency();
-		file <<t_II<<"\n";
+		//t_II = ((double)cvGetTickCount()-t_II)*1000/getTickFrequency();
+		//file <<t_II<<"\n";
 		//dilate(threshImg, threshImg, iterations = 2); 
 		
-		double t_III = (double)getTickCount();
-		checkByRGB(imgSrc,threshImg,maskRGB);
-		t_III = ((double)cvGetTickCount()-t_III)*1000/getTickFrequency();
-		file <<t_III<<"\n";
+		/* Background update */
+
+		// 8U -> 32F
+		imgBackgroundModel.convertTo(img32FBackgroundModel, CV_32FC1);
+		// B( x, y; t+1 ) = ( 1-alpha )B( x, y; t ) + ( alpha )Src( x, y; t ), if the pixel is stationary 
+		accumulateWeighted(imgGray, img32FBackgroundModel, ACCUMULATE_WEIGHTED_ALPHA_BGM, threshImg);
+		// 32F -> 8U
+		img32FBackgroundModel.convertTo(imgBackgroundModel, CV_8UC1);         //cvShowImage( "Background update", imgBackgroundModel );   
+		cv::imshow( "Background update", imgBackgroundModel );
+
+
+		//double t_III = (double)getTickCount();
+		//checkByRGB(imgSrc,threshImg,maskRGB);
+		checkByYUV(imgSrc,threshImg, maskRGB);
+		//t_III = ((double)cvGetTickCount()-t_III)*1000/getTickFrequency();
+		//file <<t_III<<"\n";
 		cv::imshow("MaskRGB", maskRGB);
 		
-		double t_IV = (double)getTickCount();
+		//double t_IV = (double)getTickCount();
 		cv::dilate(maskRGB, maskRGB,element);
 		//cout<<contours.size();
 		cv::findContours(/*threshImg*/maskRGB.clone(), contour, hierarchy, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE); 
 		//________________________________EARLY FIRE DETECTION___________________________________
 		/* assign feature points and get the number of feature */
 		getContourFeatures(imgSrc,contour, hierarchy, vecOFRect, rThrd, featuresPrev, featuresCurr);
-		t_IV = ((double)cvGetTickCount()-t_IV)*1000/getTickFrequency();
-		file <<t_IV<<"\n";
+		//t_IV = ((double)cvGetTickCount()-t_IV)*1000/getTickFrequency();
+		//file <<t_IV<<"\n";
 		
-		double t_V = (double)getTickCount();
+		//double t_V = (double)getTickCount();
 		// Pyramid L-K Optical Flow
+		imshow("imgGray",imgGray);
+		imshow("imgCurr",imgCurr);
 		cv::calcOpticalFlowPyrLK(
 			imgGray,
 			imgCurr,
 			featuresPrev,
 			featuresCurr,
 			featureFound,
-			featureErrors,
+			featureErrors, 
 			sizeWin,
 			2,
 			cv::TermCriteria(CV_TERMCRIT_EPS | CV_TERMCRIT_ITER, 20, 0.3),
 			0);
-		t_V = ((double)cvGetTickCount()-t_V)*1000/getTickFrequency();
-		file <<t_V<<"\n";
+		////t_V = ((double)cvGetTickCount()-t_V)*1000/getTickFrequency();
+		////file <<t_V<<"\n";
 
-		double t_VI = (double)getTickCount();
-		/* assign feature points to fire-like obj and then push to multimap */
+		////double t_VI = (double)getTickCount();
+		///* assign feature points to fire-like obj and then push to multimap */
 		assignFeaturePoints(mulMapOFRect, vecOFRect, featureFound, featuresPrev, featuresCurr);
-		t_VI = ((double)cvGetTickCount()-t_VI)*1000/getTickFrequency();
-		file <<t_VI<<"\n";
+		////t_VI = ((double)cvGetTickCount()-t_VI)*1000/getTickFrequency();
+		////file <<t_VI<<"\n";
 
-		double t_VII = (double)getTickCount();
-		/* compare the mulMapOFRect space with listCentroid space, if matching insert to listCentroid space as candidate fire-like obj */
+		////double t_VII = (double)getTickCount();
+		///* compare the mulMapOFRect space with listCentroid space, if matching insert to listCentroid space as candidate fire-like obj */
 		matchCentroid(imgSrc, listCentroid, mulMapOFRect, currentFrame, CONTOUR_POINTS_THRESHOLD, PROCESSING_WINDOWS);
-		t_VII = ((double)cvGetTickCount()-t_VII)*1000/getTickFrequency();
-		file <<t_VII<<"\n";
+		////t_VII = ((double)cvGetTickCount()-t_VII)*1000/getTickFrequency();
+		//file <<t_VII<<"\n";
 
 		//writer.write(imgFireAlarm);
 		currentFrame +=2;
@@ -440,7 +460,7 @@ int main()
 		//t =((double)cvGetTickCount()-t)/getTickFrequency();
 		//cout<<"FPS"<<1/t<<endl;
 		
-		file<<"TOTAL:" << t_I + t_II + t_III + t_IV + t_V + t_VI + t_VII <<"\n\n";
+		//file<<"TOTAL:" << t_I + t_II + t_III + t_IV + t_V + t_VI + t_VII <<"\n\n";
 		cv::imshow("Motion",threshImg);
 		cv::imshow("imgSrc", imgSrc);
 		char c=(char)waitKey(30);
@@ -454,6 +474,7 @@ int main()
 	imgCurr.release();
 	imgGray.release();
 	frameDelta.release();
+	img32FBackgroundModel.release();
 	cv::destroyAllWindows();
 	return 0;
 }

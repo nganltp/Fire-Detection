@@ -163,30 +163,30 @@ void train(){
 	cout<<"---------------------------------------------------------------------->"<<endl;
 	for(int num = 500; num < (FireSamNO + NoneSamNO*raitoRandom); num++){
 		dem++;
-        imgpath = line[num];
-        Mat feature;
-        Mat img = imread(imgpath, CV_LOAD_IMAGE_GRAYSCALE);
-        //cout << "Processing NoneSamNO" << imgpath << endl;
-        ComputeLBPFeatureVector_Uniform(img, Size(CELL_SIZE, CELL_SIZE), feature);
-        sampleFeatureMat.push_back(feature);
-        sampleLabelMat.push_back(1);
+		imgpath = line[num];
+		Mat feature;
+		Mat img = imread(imgpath, CV_LOAD_IMAGE_GRAYSCALE);
+		//cout << "Processing NoneSamNO" << imgpath << endl;
+		ComputeLBPFeatureVector_Uniform(img, Size(CELL_SIZE, CELL_SIZE), feature);
+		sampleFeatureMat.push_back(feature);
+		sampleLabelMat.push_back(1);
     }
 	cout<<"data train None fire " << dem<<endl;
 	svm->train(sampleFeatureMat, ROW_SAMPLE, sampleLabelMat);
-    svm->save("D:\\work\\GIT\\Motion2Cpp\\Motion2Cpp\\LBP-SVM-model.xml");
-    cout << "train done" << endl;
+	svm->save("D:\\work\\GIT\\Motion2Cpp\\Motion2Cpp\\LBP-SVM-model.xml");
+	cout << "train done" << endl;
 }
 
 void predict(){
-	string model_ = "D:\\work\\GIT\\Fire-Detection\\Motion2Cpp\\Motion2Cpp\\LBP-SVM-model.xml";
+	string model_ = "D:\\work\\GIT\\Motion2Cpp\\Motion2Cpp\\LBP-SVM-model.xml";
 	//const string& model = model_;
 	Ptr<SVM> svm = cv::ml::SVM::load<cv::ml::SVM>(model_);
-    Mat feature;
-    string imgpath = "C:\\Users\\gvc\\Downloads\\Microsoft.SkypeApp_kzf8qxf38zg5c!App\\All (2)\\2.jpg";
-    Mat img = imread(imgpath, CV_LOAD_IMAGE_GRAYSCALE);
+	Mat feature;
+	string imgpath = "C:\\Users\\gvc\\Downloads\\Microsoft.SkypeApp_kzf8qxf38zg5c!App\\All (2)\\fire_images\\fire.jpg";
+	Mat img = imread(imgpath, CV_LOAD_IMAGE_GRAYSCALE);
 	resize(img,img,cv::Size(64,64));
-    ComputeLBPFeatureVector_Uniform(img, Size(CELL_SIZE, CELL_SIZE), feature);
-    int result = svm->predict(feature);
+	ComputeLBPFeatureVector_Uniform(img, Size(CELL_SIZE, CELL_SIZE), feature);
+	int result = svm->predict(feature);
 	cout << result<< endl;
 }
 

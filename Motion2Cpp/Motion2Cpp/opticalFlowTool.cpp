@@ -217,6 +217,58 @@ void checkByRGB(const cv::Mat& imgSrc, const cv::Mat& maskMotion, cv::Mat& mask)
 		}*/
 }
 
+static const int low_Y = 133, low_U = 126, low_V = 0;
+static const int high_Y = 255, high_U = 220, high_V = 115;
+
+void checkByYUV(const cv::Mat& imgSrc, const cv::Mat& maskMotion, cv::Mat& mask) {
+
+	static const int step = imgSrc.step / sizeof(uchar);
+	static uchar* dataSrc = NULL;
+	dataSrc = reinterpret_cast<uchar*>(imgSrc.data);
+
+	// mask
+	static const int stepMask = mask.step / sizeof(uchar);
+	static uchar* dataMask = NULL;
+	dataMask = reinterpret_cast<uchar*>(mask.data);
+	static uchar* dataMaskMotion = NULL;
+	dataMaskMotion = reinterpret_cast<uchar*>(maskMotion.data);
+
+	int isize = mask.rows * mask.cols;
+	int posU = isize;
+	int posV = isize * 5/4;
+	int posY1, posY2, posY3, posY4;
+	//int i;
+	for(posU; posU < isize * 5/4; posU++)
+	{
+		if(dataSrc[posU] >= low_U && dataSrc[posU] <= high_U && dataSrc[posV] >= low_V && dataSrc[posV] <= high_V) //check UV value
+		{
+
+			int thuong =(int)( (posU - isize) /(mask.cols/2) );
+			int du = (posU - isize)%(mask.cols/2);
+			posY1 = thuong * 2*mask.cols + 2*du;
+			posY2 = posY1 + 1;
+			posY3 = posY1 + mask.cols;
+ 			posY4 = posY3 + 1;
+
+			if(dataSrc[posY1] >= low_Y && dataSrc[posY1]  <= high_Y /*&&  dataMaskMotion[posY1] == 255*/)
+				dataMask[posY1] = static_cast<uchar>(255);
+
+			if(dataSrc[posY2] >= low_Y && dataSrc[posY2] <= high_Y  /*&&  dataMaskMotion[posY1] == 255*/)
+				dataMask[posY2] = static_cast<uchar>(255);
+
+			if(dataSrc[posY3] >= low_Y && dataSrc[posY3] <= high_Y  /*&&  dataMaskMotion[posY1] == 255*/)
+				dataMask[posY3] = static_cast<uchar>(255);
+
+			if(dataSrc[posY4] >= low_Y && dataSrc[posY4] <= high_Y  /*&&  dataMaskMotion[posY1] == 255*/)
+				dataMask[posY4] = static_cast<uchar>(255);
+		}
+		//posU +=1;
+		posV +=1;
+	}
+	//std::cout<<i;
+}
+
+
 void getContourFeatures(
 	Mat &srcImage,
 	std::vector<std::vector<cv::Point>>& contour,
@@ -226,7 +278,6 @@ void getContourFeatures(
 	std::vector<cv::Point2f>& featuresPrev,
 	std::vector<cv::Point2f>& featuresCurr
 ){
-
 	static cv::Rect aRect;
 	static cv::Point p;
 	static unsigned int countCtrP;
@@ -248,7 +299,8 @@ void getContourFeatures(
  			Rect bCon =  boundingRect(contour[i]);
 			Mat crop_img = srcImage(bCon);
 			resize(crop_img,crop_img,cv::Size(64,64));
-			cvtColor(crop_img,crop_img,CV_BGR2GRAY);
+			//cvtColor(crop_img,crop_img, COLOR_YUV2GRAY_I420);
+			imshow("crop",crop_img);
 			ComputeLBPFeatureVector_Uniform(crop_img, Size(CELL_SIZE, CELL_SIZE), feature_);   
 			int result = svm->predict(feature_);
 			if(result == 0)

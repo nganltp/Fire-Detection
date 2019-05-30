@@ -1,4 +1,4 @@
-﻿Build started 27-Apr-19 4:13:15 PM.
+﻿Build started 30-May-19 9:10:03 AM.
      1>Project "D:\work\GIT\Fire-Detection\Motion2Cpp\LBP_SVM\LBP_SVM.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ID:\work\opencv\build\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt LBPSVM.cpp
@@ -11,4 +11,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:01.89
+Time Elapsed 00:00:01.80

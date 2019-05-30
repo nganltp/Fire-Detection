@@ -1,11 +1,11 @@
-﻿Build started 14-May-19 11:51:43 AM.
+﻿Build started 30-May-19 11:21:52 AM.
      1>Project "D:\work\GIT\Fire-Detection\Motion2Cpp\Motion2Cpp\Motion2Cpp.vcxproj" on node 2 (Build target(s)).
      1>ClCompile:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\CL.exe /c /ID:\work\opencv\build\include /ZI /nologo /W3 /WX- /sdl /Od /Oy- /D _MBCS /Gm /EHsc /RTC1 /MDd /GS /fp:precise /Zc:wchar_t /Zc:forScope /Fo"Debug\\" /Fd"Debug\vc110.pdb" /Gd /TP /analyze- /errorReport:prompt source.cpp
          source.cpp
-     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\source.cpp(182): warning C4018: '>' : signed/unsigned mismatch
-     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\source.cpp(290): warning C4101: 'end' : unreferenced local variable
-     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\source.cpp(290): warning C4101: 'start' : unreferenced local variable
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\source.cpp(184): warning C4018: '>' : signed/unsigned mismatch
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\source.cpp(293): warning C4101: 'end' : unreferenced local variable
+     1>d:\work\git\fire-detection\motion2cpp\motion2cpp\source.cpp(293): warning C4101: 'start' : unreferenced local variable
        Link:
          C:\Program Files (x86)\Microsoft Visual Studio 11.0\VC\bin\link.exe /ERRORREPORT:PROMPT /OUT:"D:\work\GIT\Fire-Detection\Motion2Cpp\Debug\Motion2Cpp.exe" /INCREMENTAL /NOLOGO /LIBPATH:D:\work\opencv\build\x86\vc11\lib opencv_world300d.lib kernel32.lib user32.lib gdi32.lib winspool.lib comdlg32.lib advapi32.lib shell32.lib ole32.lib oleaut32.lib uuid.lib odbc32.lib odbccp32.lib /MANIFEST /MANIFESTUAC:"level='asInvoker' uiAccess='false'" /manifest:embed /DEBUG /PDB:"D:\work\GIT\Fire-Detection\Motion2Cpp\Debug\Motion2Cpp.pdb" /TLBID:1 /DYNAMICBASE /NXCOMPAT /IMPLIB:"D:\work\GIT\Fire-Detection\Motion2Cpp\Debug\Motion2Cpp.lib" /MACHINE:X86 Debug\ds.obj
          Debug\fireBehaviorAnalysis.obj
@@ -16,4 +16,4 @@
 
 Build succeeded.
 
-Time Elapsed 00:00:02.52
+Time Elapsed 00:00:02.61
