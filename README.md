@@ -10,9 +10,8 @@ Trường Đại học công nghệ thông tin, ĐHQG-TPHCM.
 * Công nghệ: OpenCV 3.4, SVM (Support Vector Machine).
 * Ngôn ngữ: C++, Python.
 * Video Demo: [tại đây](https://www.youtube.com/playlist?list=PLzw57v8RSaORY7mJrx5TZPwho8NWilDdL)
-* Báo cáo: 
+* Báo cáo: [Fire Detection Report](https://docs.google.com/document/d/1qZi1DAUL6XPc7dVrN5u6yIfvwSeJ38vyf22Y9CDTba8/edit?usp=sharing)
 
-![alt text](https://photos.google.com/share/AF1QipMW0sRntg1hOE_xMiYNQfUJO0HY7mcalcfIgZThvd8SLwuOSzSBkTZxj6W3pt7dFQ/photo/AF1QipMTSZUJy-gSjIegVeXxOYcvTLWAgYHxCxu35OdS?key=UlJQWmlud1ZLS0VoVXB0OXNnQ3ZxejFmM3hqWEN3)
 
 ## Hướng dẫn cài đặt môi trường
 * Window, Visual Studio.
