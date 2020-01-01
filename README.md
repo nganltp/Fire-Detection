@@ -1,7 +1,7 @@
 # Đồ án môn mã nguồn mở
 
-* Giáo viên hướng dẫn: thầy Huỳnh Tuấn Anh
-* Sinh viên thực hiện: Lê Thị Phương Ngân - MSSV: 16520792
+* Giáo viên hướng dẫn: thầy **Huỳnh Tuấn Anh**
+* Sinh viên thực hiện: **Lê Thị Phương Ngân** - MSSV: **16520792**.
 
 Trường Đại học công nghệ thông tin, ĐHQG-TPHCM.
 
@@ -14,8 +14,8 @@ Trường Đại học công nghệ thông tin, ĐHQG-TPHCM.
 
 
 ## Hướng dẫn cài đặt môi trường
-* Window, Visual Studio.
-* OpenCV.
+* Window, Visual Studio 2019.
+* OpenCV 3.4.1.
 
 Mở Windows PowerShell: chạy lệnh:
 
