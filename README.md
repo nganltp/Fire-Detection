@@ -21,7 +21,6 @@ Trường Đại học công nghệ thông tin, ĐHQG-TPHCM.
 I. Image Processing.
   - Background Subtraction.
 
-
  - Fire Color Filtering.
 
  - Mophological Processing.
@@ -35,4 +34,21 @@ III. Fire Dynamic Behavior Analysis
 IV. Fire Flow Energy Analysis
 
 ## Tham khảo
+[1] G. Healey, D. Slater, T. Lin, B. Drda, and D. Goedeke.
+“A system for real-time fire detection,” IEEE
+International Conference on Computer Vision and
+Pattern Recognition, pp. 605 – 606, January 1993
+
+
+[2] C. B. Liu and N. Ahuja ”Vision Based Fire Detection,
+IEEE International Conference on Pattern
+Recognition,Vol. 4, pp. 134 – 137, August 2004.
+
+
+[3] H.D. Duong, D.D. Nguyen, L.T. Ngo, and D.T. Tinh,
+“On Approach to Vision Based Fire Detection Based on
+Type-2 Fuzzy Clustering,” IEEE International
+Conference on Soft Computing and Pattern Recognition,
+pp. 51-56, October 2011.
+
 
