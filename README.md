@@ -22,12 +22,12 @@ Mở Windows PowerShell: chạy lệnh:
 ```bash
 cd Fire-Detection\Motion2Cpp\x64\Release\
 
-Motion2Cpp.exe [Video Path]
+./Motion2Cpp.exe [Video Path]
 ```
 
 ví dụ:
 ```bash
-Motion2Cpp.exe \Fire-Detection\videoTest\test.mp4
+./Motion2Cpp.exe \Fire-Detection\videoTest\test.mp4
 ```
 
 
