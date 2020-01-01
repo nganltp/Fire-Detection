@@ -17,6 +17,18 @@ Trường Đại học công nghệ thông tin, ĐHQG-TPHCM.
 * Window, Visual Studio.
 * OpenCV.
 
+Mở Windows PowerShell: chạy lệnh:
+
+```python
+cd Fire-Detection\Motion2Cpp\x64\Release\Motion2Cpp.exe [Video Path]
+```
+
+ví dụ:
+```python
+cd Fire-Detection\Motion2Cpp\x64\Release\Motion2Cpp.exe \Fire-Detection\videoTest\test.mp4
+```
+
+
 ## Phương pháp thực hiện
 I. Image Processing.
   - Background Subtraction.
