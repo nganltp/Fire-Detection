@@ -183,7 +183,7 @@ the number of contour points
 */
 string model_ = "D:\\work\\GIT\\Fire-Detection\\Motion2Cpp\\Motion2Cpp\\LBP-SVM-model.xml";
 //const string& model = model_;
-Ptr<SVM> svm = cv::ml::SVM::load<cv::ml::SVM>(model_);
+//Ptr<SVM> svm = cv::ml::SVM::load<cv::ml::SVM>(model_);
 Mat feature_;
 
 void checkByRGB(const cv::Mat& imgSrc, const cv::Mat& maskMotion, cv::Mat& mask) {
@@ -302,8 +302,9 @@ void getContourFeatures(
 			//cvtColor(crop_img,crop_img, COLOR_YUV2GRAY_I420);
 			imshow("crop",crop_img);
 			ComputeLBPFeatureVector_Uniform(crop_img, Size(CELL_SIZE, CELL_SIZE), feature_);   
-			int result = svm->predict(feature_);
-			if(result == 0)
+			//int result = svm->predict(feature_);
+			//if(result == 0)
+			if(1)
 			{
 				//imshow("crop", crop_img);
 				rectangle(srcImage,Point (bCon.x,bCon.y), Point (bCon.x + bCon.width,bCon.y + bCon.height), Scalar(0, 0, 255), 2);

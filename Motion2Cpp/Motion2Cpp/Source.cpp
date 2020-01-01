@@ -257,15 +257,27 @@ void matchCentroid(
 }
  
 
-int main()
+int main(int argc, char* argv[])
 {
-	string namevideo = "NONE_alarmlight.mp4";
-	VideoCapture cap("D:\\work\\GIT\\testVideo\\" + namevideo); // open the default camera
+	string *imgPath;
+	if (argc > 1) {
 
-    if(!cap.isOpened()){
+		 imgPath = new string(argv[1]);
+	}
+	else
+	{
+		string namevideo = "test.mp4";
+		imgPath = new string("D:\\DoAn\\Fire-Detection\\videoTest\\" + namevideo);
+		//VideoCapture cap("D:\\DoAn\\Fire-Detection\\videoTest\\" + namevideo); // open the default camera
+	}
+	
+	VideoCapture cap(*imgPath);
+
+	if (!cap.isOpened()) {
 		cout << "Error opening video stream or file" << endl;
-    return -1;
-  }
+		return -1;
+	}
+
 
 	cv::Mat imgSrc;
 	cap.read(imgSrc);
