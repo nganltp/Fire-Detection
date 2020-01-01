@@ -21,7 +21,9 @@ Mở Windows PowerShell: chạy lệnh:
 
 ```bash
 cd Fire-Detection\Motion2Cpp\x64\Release\
+```
 
+```bash
 ./Motion2Cpp.exe [Video Path]
 ```
 
